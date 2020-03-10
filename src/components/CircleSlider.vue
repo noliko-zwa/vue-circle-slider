@@ -135,174 +135,172 @@ export default {
       currentStepValue: 0,
       mousePressed: false,
       circleSliderState: null,
-      mousemoveTicks: 0
-    }
+      mousemoveTicks: 0,
+    };
   },
   computed: {
-    // cpStartAngleOffset () {
-    //   if (!this.minStepLimit) {
-    //     return 0
-    //   }
-    // },
-    cpCenter () {
-      return this.side / 2
+    cpCenter() {
+      return this.side / 2;
     },
-    cpAngle () {
-      return this.angle + Math.PI / 2
+    cpAngle() {
+      return this.angle + Math.PI / 2;
     },
-    cpMainCircleStrokeWidth () {
-      return this.circleWidth || (this.side / 2) / this.circleWidthRel
+    cpMainCircleStrokeWidth() {
+      return this.circleWidth || (this.side / 2) / this.circleWidthRel;
     },
-    cpPathDirection () {
-      return (this.cpAngle < 3 / 2 * Math.PI) ? 0 : 1
+    cpPathDirection() {
+      return (this.cpAngle < 3 / 2 * Math.PI) ? 0 : 1;
     },
-    cpPathX () {
-      return this.cpCenter + this.radius * Math.cos(this.cpAngle)
+    cpPathX() {
+      // return this.cpCenter + this.radius * Math.cos(this.cpAngle); original
+      return this.cpCenter - this.radius * Math.cos(this.cpAngle);
     },
-    cpPathY () {
-      return this.cpCenter + this.radius * Math.sin(this.cpAngle)
+    cpPathY() {
+      //return this.cpCenter - this.radius * Math.sin(this.cpAngle); original
+      return this.cpCenter - this.radius * Math.sin(this.cpAngle);
     },
-    cpPathStrokeWidth () {
-      return this.progressWidth || (this.side / 2) / this.progressWidthRel
+    cpPathStrokeWidth() {
+      return this.progressWidth || (this.side / 2) / this.progressWidthRel;
     },
-    cpKnobRadius () {
-      return this.knobRadius || (this.side / 2) / this.knobRadiusRel
+    cpKnobRadius() {
+      return this.knobRadius || (this.side / 2) / this.knobRadiusRel;
     },
-    cpPathD () {
-      let parts = []
-      parts.push('M' + this.cpCenter)
-      parts.push(this.cpCenter + this.radius)
-      parts.push('A')
-      parts.push(this.radius)
-      parts.push(this.radius)
-      parts.push(0)
-      parts.push(this.cpPathDirection)
-      parts.push(1)
-      parts.push(this.cpPathX)
-      parts.push(this.cpPathY)
-      return parts.join(' ')
-    }
+    cpPathD() {
+      const parts = [];
+      parts.push(`M${this.cpCenter}`);
+      // parts.push(this.cpCenter + this.radius); original
+      parts.push(this.cpCenter - this.radius);
+      parts.push('A');
+      parts.push(this.radius);
+      parts.push(this.radius);
+      parts.push(0);
+      parts.push(this.cpPathDirection);
+      parts.push(1);
+      parts.push(this.cpPathX);
+      parts.push(this.cpPathY);
+      return parts.join(' ');
+    },
   },
   methods: {
     /*
      */
-    fitToStep (val) {
-      return Math.round(val / this.stepSize) * this.stepSize
+    fitToStep(val) {
+      return Math.round(val / this.stepSize) * this.stepSize;
     },
 
     /*
      */
-    handleClick (e) {
-      this.touchPosition.setNewPosition(e)
+    handleClick(e) {
+      this.touchPosition.setNewPosition(e);
       if (this.touchPosition.isTouchWithinSliderRange) {
-        const newAngle = this.touchPosition.sliderAngle
-        this.animateSlider(this.angle, newAngle)
+        const newAngle = this.touchPosition.sliderAngle;
+        this.animateSlider(this.angle, newAngle);
       }
     },
 
     /*
      */
-    handleMouseDown (e) {
-      e.preventDefault()
-      this.mousePressed = true
-      window.addEventListener('mousemove', this.handleWindowMouseMove)
-      window.addEventListener('mouseup', this.handleMouseUp)
+    handleMouseDown(e) {
+      e.preventDefault();
+      this.mousePressed = true;
+      window.addEventListener('mousemove', this.handleWindowMouseMove);
+      window.addEventListener('mouseup', this.handleMouseUp);
     },
 
     /*
      */
-    handleMouseUp (e) {
-      e.preventDefault()
-      this.mousePressed = false
-      window.removeEventListener('mousemove', this.handleWindowMouseMove)
-      window.removeEventListener('mouseup', this.handleMouseUp)
-      this.mousemoveTicks = 0
+    handleMouseUp(e) {
+      e.preventDefault();
+      this.mousePressed = false;
+      window.removeEventListener('mousemove', this.handleWindowMouseMove);
+      window.removeEventListener('mouseup', this.handleMouseUp);
+      this.mousemoveTicks = 0;
     },
 
     /*
      */
-    handleWindowMouseMove (e) {
-      e.preventDefault()
+    handleWindowMouseMove(e) {
+      e.preventDefault();
       if (this.mousemoveTicks < 5) {
-        this.mousemoveTicks++
-        return
+        this.mousemoveTicks++;
+        return;
       }
 
-      this.touchPosition.setNewPosition(e)
-      this.updateSlider()
+      this.touchPosition.setNewPosition(e);
+      this.updateSlider();
     },
 
     /*
      */
-    handleTouchMove (e) {
-      this.$emit('touchmove')
+    handleTouchMove(e) {
+      this.$emit('touchmove');
       // Do nothing if two or more fingers used
       if (e.targetTouches.length > 1 || e.changedTouches.length > 1 || e.touches.length > 1) {
-        return true
+        return true;
       }
 
-      const lastTouch = e.targetTouches.item(e.targetTouches.length - 1)
-      this.touchPosition.setNewPosition(lastTouch)
+      const lastTouch = e.targetTouches.item(e.targetTouches.length - 1);
+      this.touchPosition.setNewPosition(lastTouch);
 
       if (this.touchPosition.isTouchWithinSliderRange) {
-        e.preventDefault()
-        this.updateSlider()
+        e.preventDefault();
+        this.updateSlider();
       }
     },
 
     /*
      */
-    updateAngle (angle) {
-      this.circleSliderState.updateCurrentStepFromAngle(angle)
-      this.angle = this.circleSliderState.angleValue
-      this.currentStepValue = this.circleSliderState.currentStep
+    updateAngle(angle) {
+      this.circleSliderState.updateCurrentStepFromAngle(angle);
+      this.angle = this.circleSliderState.angleValue;
+      this.currentStepValue = this.circleSliderState.currentStep;
 
-      this.$emit('input', this.currentStepValue)
+      this.$emit('input', this.currentStepValue);
     },
 
     /*
      */
-    updateFromPropValue (value) {
-      let stepValue = this.fitToStep(value)
-      this.circleSliderState.updateCurrentStepFromValue(stepValue)
+    updateFromPropValue(value) {
+      const stepValue = this.fitToStep(value);
+      this.circleSliderState.updateCurrentStepFromValue(stepValue);
 
-      this.angle = this.circleSliderState.angleValue
-      this.currentStepValue = stepValue
-      this.$emit('input', this.currentStepValue)
+      this.angle = this.circleSliderState.angleValue;
+      this.currentStepValue = stepValue;
+      this.$emit('input', this.currentStepValue);
     },
 
     /*
      */
-    updateSlider () {
-      const angle = this.touchPosition.sliderAngle
+    updateSlider() {
+      const angle = this.touchPosition.sliderAngle;
       if (Math.abs(angle - this.angle) < Math.PI) {
-        this.updateAngle(angle)
+        this.updateAngle(angle);
       }
     },
 
     /*
      */
-    animateSlider (startAngle, endAngle) {
-      const direction = startAngle < endAngle ? 1 : -1
-      const curveAngleMovementUnit = direction * this.circleSliderState.angleUnit * 2
+    animateSlider(startAngle, endAngle) {
+      const direction = startAngle < endAngle ? 1 : -1;
+      const curveAngleMovementUnit = direction * this.circleSliderState.angleUnit * 2;
 
       const animate = () => {
         if (Math.abs(endAngle - startAngle) < Math.abs(2 * curveAngleMovementUnit)) {
-          this.updateAngle(endAngle)
+          this.updateAngle(endAngle);
         } else {
-          const newAngle = startAngle + curveAngleMovementUnit
-          this.updateAngle(newAngle)
-          this.animateSlider(newAngle, endAngle)
+          const newAngle = startAngle + curveAngleMovementUnit;
+          this.updateAngle(newAngle);
+          this.animateSlider(newAngle, endAngle);
         }
-      }
+      };
 
-      window.requestAnimationFrame(animate)
-    }
+      window.requestAnimationFrame(animate);
+    },
   },
   watch: {
-    value (val) {
-      this.updateFromPropValue(val)
-    }
-  }
-}
+    value(val) {
+      this.updateFromPropValue(val);
+    },
+  },
+};
 </script>

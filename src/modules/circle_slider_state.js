@@ -53,7 +53,7 @@ export default class CircleSliderState {
   /*
    */
   updateCurrentStepFromAngle (angle) {
-    const stepIndex = Math.round((angle - this.offset) / this.angleUnit)
+    const stepIndex = Math.round((angle + this.offset) / this.angleUnit)
     this.currentStepIndex = Math.min(Math.max(stepIndex, 0), this.length)
   }
 }
