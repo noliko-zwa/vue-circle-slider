@@ -9,7 +9,7 @@
       <g>
         <circle :stroke="circleColor" fill="none" :stroke-width="cpMainCircleStrokeWidth" :cx="cpCenter" :cy="cpCenter" :r="radius"></circle>
         <path :stroke="progressColor" fill="none" :stroke-width="cpPathStrokeWidth" :d="cpPathD"></path>
-        <circle :stroke="knobColor" fill="none" :r="cpKnobRadius" :cx="cpPathX" :cy="cpPathY"></circle>
+        <circle :stroke="knobColor" :fill="knobFillColor" :stroke-width="cpKnobStrokeWidth" :r="cpKnobRadius" :cx="cpPathX" :cy="cpPathY"></circle>
       </g>
     </svg>
   </div>
@@ -85,6 +85,11 @@ export default {
       required: false,
       default: '#00be7e'
     },
+    knobFillColor: {
+      type: String,
+      required: false,
+      default: '#00be7e'
+    },
     knobRadius: {
       type: Number,
       required: false,
@@ -104,6 +109,11 @@ export default {
       type: Number,
       required: false,
       default: 20
+    },
+    cpKnobStrokeWidth: {
+      type: Number,
+      required: false,
+      default: 7
     },
     progressWidth: {
       type: Number,
